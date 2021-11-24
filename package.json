@@ -14,5 +14,8 @@
   "name": "fluffy-polar-bot",
   "version": "1.0.0",
   "main": "app.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start" : "node app.js"
+  }
 }
