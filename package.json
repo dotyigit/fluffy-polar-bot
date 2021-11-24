@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "axios": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "ethers": "^5.5.1",
+    "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "node-fetch": "^3.1.0",
+    "node-twitter-api": "^1.8.0",
+    "twit": "^2.2.11"
+  },
+  "name": "fluffy-polar-bot",
+  "version": "1.0.0",
+  "main": "app.js",
+  "license": "MIT"
+}
