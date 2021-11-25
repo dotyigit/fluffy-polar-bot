@@ -44,9 +44,13 @@ setInterval(() => {
             if (created > lastSaleTime + 1) {
                 const tokenID = _.get(event, 'tokenID')
 
+                const transactionHash = _.get(event, 'hash')
+
                 axios.get(`https://api.opensea.io/api/v1/asset/${process.env.CONTRACT_ADRESS}/${tokenID}`)
                 .then((response) => {
                     const lastSale = _.get(response, ['data', 'last_sale'])
+
+                    const lastSaleTransactionHash = _.get(lastSale, ['transaction', 'transaction_hash'])
 
                     const assetName = _.get(response, ['data','name']);
                     const openseaLink = _.get(response, ['data','permalink']);
@@ -65,8 +69,11 @@ setInterval(() => {
                     // POST
                     /* const channel = client.channels.cache.find(channel => channel.name === 'general')
                     channel.send(`New Sale: ${tokenID} is sold for ${ethers.constants.EtherSymbol}${formattedEthPrice} (${formattedUsdPrice})`); */
-                    tweet.tweet(tweetText)
-                    cache.set('lastSaleTime', Math.trunc(moment(new Date).valueOf()/1000))
+                    if (transactionHash == lastSaleTransactionHash) {
+                        console.log(tweetText)
+                        //tweet.tweet(tweetText)
+                        cache.set('lastSaleTime', Math.trunc(moment(new Date).valueOf()/1000))
+                    }
 
                 }).catch((error) => {
                     console.error(error)
