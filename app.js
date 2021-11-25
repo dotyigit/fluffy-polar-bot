@@ -17,6 +17,7 @@ const tweet = require('./tweet')
 });
  */
 
+console.log("Fluffy Polar Bears Sales Bot Started Working...");
 
 const startTimeStamp = Math.trunc(moment(new Date).valueOf()/1000);
 
@@ -52,26 +53,25 @@ setInterval(() => {
 
                     const lastSaleTransactionHash = _.get(lastSale, ['transaction', 'transaction_hash'])
 
-                    const assetName = _.get(response, ['data','name']);
-                    const openseaLink = _.get(response, ['data','permalink']);
-
-                    const totalPrice = _.get(lastSale, 'total_price')
-
-                    const tokenDecimals = _.get(lastSale, ['payment_token', 'decimals']);
-                    const tokenUsdPrice = _.get(lastSale, ['payment_token', 'usd_price']);
-                    const tokenEthPrice = _.get(lastSale, ['payment_token', 'eth_price']);
-
-                    const formattedUnits = ethers.utils.formatUnits(totalPrice, tokenDecimals);
-                    const formattedEthPrice = formattedUnits * tokenEthPrice;
-                    const formattedUsdPrice = formattedUnits * tokenUsdPrice;
-
-                    const tweetText = `${assetName} just sold! Price: ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
                     // POST
                     /* const channel = client.channels.cache.find(channel => channel.name === 'general')
                     channel.send(`New Sale: ${tokenID} is sold for ${ethers.constants.EtherSymbol}${formattedEthPrice} (${formattedUsdPrice})`); */
                     if (transactionHash == lastSaleTransactionHash) {
-                        console.log(tweetText)
-                        //tweet.tweet(tweetText)
+                        const assetName = _.get(response, ['data','name']);
+                        const openseaLink = _.get(response, ['data','permalink']);
+
+                        const totalPrice = _.get(lastSale, 'total_price')
+
+                        const tokenDecimals = _.get(lastSale, ['payment_token', 'decimals']);
+                        const tokenUsdPrice = _.get(lastSale, ['payment_token', 'usd_price']);
+                        const tokenEthPrice = _.get(lastSale, ['payment_token', 'eth_price']);
+
+                        const formattedUnits = ethers.utils.formatUnits(totalPrice, tokenDecimals);
+                        const formattedEthPrice = formattedUnits * tokenEthPrice;
+                        const formattedUsdPrice = formattedUnits * tokenUsdPrice;
+
+                        const tweetText = `${assetName} just sold! Price: ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
+                        tweet.tweet(tweetText)
                         cache.set('lastSaleTime', Math.trunc(moment(new Date).valueOf()/1000))
                     }
 
