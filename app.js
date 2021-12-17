@@ -70,7 +70,7 @@ setInterval(() => {
                         const formattedUsdPrice = formattedUnits * tokenUsdPrice;
 
                         const tweetText = `${assetName} just sold! Price: ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
-                        const channel = client.channels.cache.find(channel => channel.id === '883624556122746920')
+                        const channel = client.channels.cache.find(channel => channel.id === '921446553338658876')
                         channel.send(tweetText);
                         tweet.tweet(tweetText)
                         cache.set('lastSaleTime', Math.trunc(moment(new Date).valueOf()/1000))
