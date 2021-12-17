@@ -87,4 +87,4 @@ setInterval(() => {
 }, 60000);
 
 
-// client.login(process.env.CLIENT_TOKEN);
+client.login(process.env.CLIENT_TOKEN);
