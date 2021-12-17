@@ -4,18 +4,18 @@ const axios = require('axios')
 const moment = require('moment')
 const ethers = require('ethers')
 
-// const Discord = require('discord.js')
+const Discord = require('discord.js')
 
-// const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 const cache = require('./cache')
 const tweet = require('./tweet')
 
 
-/* client.on('ready', async () => {
+client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
- */
+
 
 console.log("Fluffy Polar Bears Sales Bot Started Working...");
 
@@ -54,8 +54,7 @@ setInterval(() => {
                     const lastSaleTransactionHash = _.get(lastSale, ['transaction', 'transaction_hash'])
 
                     // POST
-                    /* const channel = client.channels.cache.find(channel => channel.name === 'general')
-                    channel.send(`New Sale: ${tokenID} is sold for ${ethers.constants.EtherSymbol}${formattedEthPrice} (${formattedUsdPrice})`); */
+
                     if (transactionHash == lastSaleTransactionHash) {
                         const assetName = _.get(response, ['data','name']);
                         const openseaLink = _.get(response, ['data','permalink']);
@@ -71,6 +70,8 @@ setInterval(() => {
                         const formattedUsdPrice = formattedUnits * tokenUsdPrice;
 
                         const tweetText = `${assetName} just sold! Price: ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
+                        const channel = client.channels.cache.find(channel => channel.id === '883624556122746920')
+                        channel.send(tweetText);
                         tweet.tweet(tweetText)
                         cache.set('lastSaleTime', Math.trunc(moment(new Date).valueOf()/1000))
                     }
