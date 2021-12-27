@@ -19,7 +19,7 @@ client.on('ready', async () => {
 
 console.log("Fluffy Polar Bears Sales Bot Started Working...");
 
-const startTimeStamp = Math.trunc(moment(new Date).valueOf()/1000);
+const startTimeStamp = 1640644402
 
 setInterval(() => {
 
@@ -47,7 +47,9 @@ setInterval(() => {
 
                 const transactionHash = _.get(event, 'hash')
 
-                axios.get(`https://api.opensea.io/api/v1/asset/${process.env.CONTRACT_ADRESS}/${tokenID}`)
+                axios.get(`https://api.opensea.io/api/v1/asset/${process.env.CONTRACT_ADRESS}/${tokenID}`, { headers: {
+                    'X-API-KEY': process.env.OS_API
+                } })
                 .then((response) => {
                     const lastSale = _.get(response, ['data', 'last_sale'])
 
