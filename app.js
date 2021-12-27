@@ -19,7 +19,7 @@ client.on('ready', async () => {
 
 console.log("Fluffy Polar Bears Sales Bot Started Working...");
 
-const startTimeStamp = 1640644402
+const startTimeStamp = Math.trunc(moment(new Date).valueOf()/1000);
 
 setInterval(() => {
 
