@@ -31,7 +31,7 @@ setInterval(() => {
             action: 'tokennfttx',
             contractaddress: process.env.CONTRACT_ADRESS,
             page: 1,
-            offset: 100,
+            offset: 20,
             sort: 'desc',
             apikey: process.env.ETHERSCAN_API_KEY
         }
