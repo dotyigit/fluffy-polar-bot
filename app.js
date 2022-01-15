@@ -53,7 +53,7 @@ function formatAndSendTweet(event) {
     // const imageUrl = _.get(event, ['asset', 'image_url']);
     // return tweet.tweetWithImage(tweetText, imageUrl);
 
-    //return tweet.tweet(tweetText);
+    return tweet.tweet(tweetText);
 }
 
 
