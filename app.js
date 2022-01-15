@@ -19,73 +19,80 @@ client.on('ready', async () => {
 
 console.log("Fluffy Polar Bears Sales Bot Started Working...");
 
-const startTimeStamp = Math.trunc(moment(new Date).valueOf()/1000);
+
+function formatAndSendTweet(event) {
+    // Handle both individual items + bundle sales
+    const assetName = _.get(event, ['asset', 'name'], _.get(event, ['asset_bundle', 'name']));
+    const openseaLink = _.get(event, ['asset', 'permalink'], _.get(event, ['asset_bundle', 'permalink']));
+
+    const totalPrice = _.get(event, 'total_price');
+
+    const tokenDecimals = _.get(event, ['payment_token', 'decimals']);
+    const tokenUsdPrice = _.get(event, ['payment_token', 'usd_price']);
+    const tokenEthPrice = _.get(event, ['payment_token', 'eth_price']);
+
+    const formattedUnits = ethers.utils.formatUnits(totalPrice, tokenDecimals);
+    const formattedEthPrice = formattedUnits * tokenEthPrice;
+    const formattedUsdPrice = formattedUnits * tokenUsdPrice;
+
+    const tweetText = `${assetName} just sold! Price: ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
+    const channel = client.channels.cache.find(channel => channel.id === '921446553338658876')
+    // TEST CHANNEL BELOW
+    // const channel = client.channels.cache.find(channel => channel.id === '911572120721559572')
+    console.log(tweetText);
+    
+    channel.send(tweetText);
+
+    // OPTIONAL PREFERENCE - don't tweet out sales below X ETH (default is 1 ETH - change to what you prefer)
+    // if (Number(formattedEthPrice) < 1) {
+    //     console.log(`${assetName} sold below tweet price (${formattedEthPrice} ETH).`);
+    //     return;
+    // }
+
+    // OPTIONAL PREFERENCE - if you want the tweet to include an attached image instead of just text
+    // const imageUrl = _.get(event, ['asset', 'image_url']);
+    // return tweet.tweetWithImage(tweetText, imageUrl);
+
+    //return tweet.tweet(tweetText);
+}
+
 
 setInterval(() => {
+    const lastSaleTime = cache.get('lastSaleTime', null) || moment().startOf('minute').subtract(59, "seconds").unix();
+    console.log(`Last sale (in seconds since Unix epoch): ${cache.get('lastSaleTime', null)}`);
 
-    const lastSaleTime = cache.get('lastSaleTime', null) || startTimeStamp;
-
-    axios.get('https://api.etherscan.io/api', {
+    axios.get('https://api.opensea.io/api/v1/events', {
+        headers: {
+            'X-API-KEY': process.env.OS_API
+        },
         params: {
-            module: 'account',
-            action: 'tokennfttx',
-            contractaddress: process.env.CONTRACT_ADRESS,
-            page: 1,
-            offset: 15,
-            sort: 'desc',
-            apikey: process.env.ETHERSCAN_API_KEY
+            collection_slug: process.env.OPENSEA_COLLECTION_SLUG,
+            event_type: 'successful',
+            occurred_after: lastSaleTime,
+            only_opensea: 'false'
         }
     }).then((response) => {
-        let events = _.get(response, ['data', 'result']);
+        const events = _.get(response, ['data', 'asset_events']);
 
-        events = _.orderBy(events, ['timestamp'],['asc'])
+        const sortedEvents = _.sortBy(events, function(event) {
+            const created = _.get(event, 'created_date');
 
-        _.each(events, (event) => {
-            const created = _.get(event, 'timeStamp');
-            if (created > lastSaleTime + 1) {
-                const tokenID = _.get(event, 'tokenID')
+            return new Date(created);
+        })
 
-                const transactionHash = _.get(event, 'hash')
+        console.log(`${events.length} sales since the last one...`);
 
-                axios.get(`https://api.opensea.io/api/v1/asset/${process.env.CONTRACT_ADRESS}/${tokenID}?format=json`, { headers: {
-                    'X-API-KEY': process.env.OS_API
-                } })
-                .then((response) => {
-                    const lastSale = _.get(response, ['data', 'last_sale'])
+        _.each(sortedEvents, (event) => {
+            const created = _.get(event, 'created_date');
 
-                    const lastSaleTransactionHash = _.get(lastSale, ['transaction', 'transaction_hash'])
+            cache.set('lastSaleTime', moment(created).unix());
 
-                    // POST
-
-                    if (transactionHash == lastSaleTransactionHash) {
-                        const assetName = _.get(response, ['data','name']);
-                        const openseaLink = _.get(response, ['data','permalink']);
-
-                        const totalPrice = _.get(lastSale, 'total_price')
-
-                        const tokenDecimals = _.get(lastSale, ['payment_token', 'decimals']);
-                        const tokenUsdPrice = _.get(lastSale, ['payment_token', 'usd_price']);
-                        const tokenEthPrice = _.get(lastSale, ['payment_token', 'eth_price']);
-
-                        const formattedUnits = ethers.utils.formatUnits(totalPrice, tokenDecimals);
-                        const formattedEthPrice = formattedUnits * tokenEthPrice;
-                        const formattedUsdPrice = formattedUnits * tokenUsdPrice;
-
-                        const tweetText = `${assetName} just sold! Price: ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
-                        const channel = client.channels.cache.find(channel => channel.id === '921446553338658876')
-                        channel.send(tweetText);
-                        tweet.tweet(tweetText)
-                        cache.set('lastSaleTime', Math.trunc(moment(new Date).valueOf()/1000))
-                    }
-
-                }).catch((error) => {
-                    console.error(error)
-                })
-            }
+            return formatAndSendTweet(event);
         });
     }).catch((error) => {
         console.error(error);
     });
+
 }, 60000);
 
 
