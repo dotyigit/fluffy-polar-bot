@@ -187,7 +187,7 @@ setInterval(() => {
     
         const filteredEvents = _.filter(events, function(event) {
             console.log(moment(event.createdAt).unix());
-            return moment(event.createdAt).unix() >= lastSaleTimeAtLooksrare
+            return moment(event.createdAt).unix() > lastSaleTimeAtLooksrare
         })
     
         console.log(`LooksRare: ${filteredEvents.length} sales since the last one...`);
