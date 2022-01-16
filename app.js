@@ -153,7 +153,7 @@ setInterval(() => {
 
             cache.set('lastSaleTime', moment(created).unix());
 
-            return formatAndSendTweetOpensea(event);
+            //return formatAndSendTweetOpensea(event);
         });
     }).catch((error) => {
         console.error(error);
@@ -180,7 +180,8 @@ setInterval(() => {
             'Content-Type': 'application/json'
           }
     }).then((response) => {
-        
+        console.log(lastSaleTimeAtLooksrare);
+
         const events = _.get(response, ['data', 'data', 'events']);
     
         const filteredEvents = _.filter(events, function(event) {
@@ -194,7 +195,7 @@ setInterval(() => {
     
             cache.set('lastSaleTimeAtLooksrare', moment(created).unix());
 
-            return formatAndSendTweetLooksrare(event);
+            //return formatAndSendTweetLooksrare(event);
     
         });
     }).catch((err) => {
