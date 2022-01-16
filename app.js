@@ -153,7 +153,7 @@ setInterval(() => {
 
             cache.set('lastSaleTime', moment(created).unix());
 
-            //return formatAndSendTweetOpensea(event);
+            return formatAndSendTweetOpensea(event);
         });
     }).catch((error) => {
         console.error(error);
@@ -195,7 +195,7 @@ setInterval(() => {
     
             cache.set('lastSaleTimeAtLooksrare', moment(created).unix());
 
-            //return formatAndSendTweetLooksrare(event);
+            return formatAndSendTweetLooksrare(event);
     
         });
     }).catch((err) => {
