@@ -185,6 +185,7 @@ setInterval(() => {
         const events = _.get(response, ['data', 'data', 'events']);
     
         const filteredEvents = _.filter(events, function(event) {
+            console.log(moment(event.createdAt).unix());
             return moment(event.createdAt).unix() > lastSaleTimeAtLooksrare
         })
     
