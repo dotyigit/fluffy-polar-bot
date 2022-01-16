@@ -122,6 +122,7 @@ function formatAndSendTweetLooksrare(event) {
     
 }
 
+const startTimeStamp = moment().startOf('minute').subtract(1, "seconds").unix()
 
 setInterval(() => {
     const lastSaleTime = cache.get('lastSaleTime', null) || moment().startOf('minute').subtract(59, "seconds").unix();
@@ -161,7 +162,7 @@ setInterval(() => {
 
 
     // LOOKSRARE
-    const lastSaleTimeAtLooksrare = cache.get('lastSaleTimeAtLooksrare', null) || moment().startOf('minute').subtract(59, "seconds").unix();
+    const lastSaleTimeAtLooksrare = cache.get('lastSaleTimeAtLooksrare', null) || startTimeStamp;
 
     axios.post('https://api.looksrare.org/graphql', {
         query: query,
