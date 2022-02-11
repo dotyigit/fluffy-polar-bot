@@ -161,7 +161,7 @@ setInterval(() => {
     });
 
 
-    // LOOKSRARE
+/*     // LOOKSRARE
     const lastSaleTimeAtLooksrare = cache.get('lastSaleTimeAtLooksrare', null) || startTimeStamp;
 
     axios.post('https://api.looksrare.org/graphql', {
@@ -202,7 +202,7 @@ setInterval(() => {
         });
     }).catch((err) => {
         console.error(err);
-    })
+    }) */
 
 
 
