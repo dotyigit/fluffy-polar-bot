@@ -78,7 +78,7 @@ function formatAndSendTweetOpensea(event) {
     const formattedEthPrice = formattedUnits * tokenEthPrice;
     const formattedUsdPrice = formattedUnits * tokenUsdPrice;
 
-    const tweetText = `${assetName} bought on at OpenSea for ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
+    const tweetText = `${assetName} bought on OpenSea for ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${openseaLink}`;
     const channel = client.channels.cache.find(channel => channel.id === '921446553338658876')
     // TEST CHANNEL BELOW
     // const channel = client.channels.cache.find(channel => channel.id === '911572120721559572')
