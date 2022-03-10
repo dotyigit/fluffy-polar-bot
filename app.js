@@ -26,7 +26,7 @@ query GetEventsQuery($pagination: PaginationInput, $filter: EventFilterInput) {
       ...EventFragment
     }
   }
-  
+
 fragment EventFragment on Event {
   id
   from
@@ -83,7 +83,7 @@ function formatAndSendTweetOpensea(event) {
     // TEST CHANNEL BELOW
     // const channel = client.channels.cache.find(channel => channel.id === '911572120721559572')
     console.log(tweetText);
-    
+
     channel.send(tweetText);
 
     return tweet.tweet(tweetText);
@@ -100,31 +100,33 @@ function formatAndSendTweetLooksrare(event) {
 
     axios.get('https://api.coinbase.com/v2/prices/ETH-USD/spot').then((response) => {
         const ethResponse = response
-    
+
         const ethUsdPrice = _.get(ethResponse, ['data', 'data', 'amount'], 0)
-    
+
         if (ethUsdPrice) {
-    
+
             const formattedUsdPrice = formattedEthPrice * ethUsdPrice
-            
+
             const tweetText = `${assetName} bought on @LooksRareNFT for ${ethers.constants.EtherSymbol}${formattedEthPrice} ($${Number(formattedUsdPrice).toFixed(2)}) #NFT #FPBears ${looksRareLink}`;
             const channel = client.channels.cache.find(channel => channel.id === '921446553338658876')
             // TEST CHANNEL BELOW
             // const channel = client.channels.cache.find(channel => channel.id === '911572120721559572')
             console.log(tweetText);
-            
-            channel.send(tweetText);
-        
-        
-            return tweet.tweet(tweetText);
+
+            //channel.send(tweetText);
+
+
+            //return tweet.tweet(tweetText);
         }
     })
-    
+
 }
 
-const startTimeStamp = moment().startOf('minute').subtract(1, "seconds").unix()
+//const startTimeStamp = moment().startOf('minute').subtract(1, "seconds").unix()
 
 setInterval(() => {
+    //const lastSaleTime = cache.get('lastSaleTime', null) || startTimeStamp;
+
     const lastSaleTime = cache.get('lastSaleTime', null) || moment().startOf('minute').subtract(59, "seconds").unix();
     //console.log(`Last sale (in seconds since Unix epoch): ${cache.get('lastSaleTime', null)}`);
 
@@ -135,7 +137,6 @@ setInterval(() => {
         params: {
             collection_slug: process.env.OPENSEA_COLLECTION_SLUG,
             event_type: 'successful',
-            occurred_after: lastSaleTime,
             only_opensea: 'false'
         }
     }).then((response) => {
@@ -146,15 +147,18 @@ setInterval(() => {
 
             return new Date(created);
         })
-        
-        console.log(`Opensea: ${events.length} sales since the last one...`);
+
+        //console.log(`Opensea: ${events.length} sales since the last one...`);
 
         _.each(sortedEvents, (event) => {
             const created = _.get(event, 'created_date');
+            //console.log("Times: ", moment(created).unix(), " - ", lastSaleTime);
+            if (moment.utc(created).unix() > lastSaleTime) {
+              cache.set('lastSaleTime', moment.utc(created).unix());
 
-            cache.set('lastSaleTime', moment(created).unix());
-
-            return formatAndSendTweetOpensea(event);
+              //console.log(event);
+              return formatAndSendTweetOpensea(event);
+            }
         });
     }).catch((error) => {
         console.error(error);
@@ -184,21 +188,21 @@ setInterval(() => {
         console.log(lastSaleTimeAtLooksrare);
 
         const events = _.get(response, ['data', 'data', 'events']);
-    
+
         const filteredEvents = _.filter(events, function(event) {
             console.log(moment(event.createdAt).unix());
             return moment(event.createdAt).unix() > lastSaleTimeAtLooksrare
         })
-    
+
         console.log(`LooksRare: ${filteredEvents.length} sales since the last one...`);
-    
+
         _.each(filteredEvents, (event) => {
             const created = _.get(event, 'createdAt');
-    
+
             cache.set('lastSaleTimeAtLooksrare', moment(created).unix());
 
             //return formatAndSendTweetLooksrare(event);
-    
+
         });
     }).catch((err) => {
         console.error(err);
